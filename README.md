@@ -26,6 +26,20 @@ function createTextElement(text) {
 }
 ```
 
+Functions or strings are passed as first argument to `createElement`. The second argument is an object with the props. The rest of the arguments are the children.
+
+Passing a function component:
+
+```js
+function MyComponent(props) {
+  return <div>{props.children}</div>
+}
+
+React.createElement(MyComponent, { prop1: 'value' }, 'Hello')
+```
+
+A function component is just a function. React calls it just like any other function. It passes the props and any context needed by the component.
+
 ## Render function
 
 The render function gets the element to render and the container where to render it. The container is a DOM element. The element is the VDOM Node converted by Babel.
