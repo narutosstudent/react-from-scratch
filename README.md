@@ -80,6 +80,42 @@ It will end up like this when called with its props:
 }
 ```
 
+### Another example
+
+```js
+{
+  type: Container,
+  props: {
+    children: [
+      { type: Item, props: { children: [] } }
+    ]
+  }
+}
+
+function Container(props) {
+  return <div>{props.children}</div>;
+}
+function Item() {
+  return <span>An item</span>;
+}
+
+{
+  type: 'div',
+  props: {
+    children: [
+      {
+        type: 'span',
+        props: {
+          children: [
+            { type: 'TEXT_ELEMENT', props: { nodeValue: 'An item', children: [] } }
+          ]
+        }
+      }
+    ]
+  }
+}
+```
+
 ## VDOM
 
 This object is a virtual DOM element. The virtual DOM is a lightweight copy of the actual DOM, allowing React to do fast operations in memory without touching the real DOM. Touching the real DOM every time would be slow/expensive.
