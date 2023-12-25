@@ -1,0 +1,20 @@
+{
+  "name": "react-from-scratch",
+  "version": "1.0.0",
+  "description": "React from scratch",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.23.4",
+    "@babel/core": "^7.23.6",
+    "@babel/preset-env": "^7.23.6",
+    "@babel/preset-react": "^7.23.3",
+    "@babel/preset-typescript": "^7.23.3",
+    "typescript": "^5.3.3"
+  }
+}
