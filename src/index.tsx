@@ -64,14 +64,24 @@ function render(vdom: VDOMNode, container: HTMLElement | null): void {
     const newElement = document.createElement(vdom.type)
     const { children, ...props } = vdom.props
     Object.keys(props).forEach((key) => {
-      if (key === REACT_OWN_ATTRIBUTES.className) {
+      const isEventAttribute = key.startsWith('on')
+
+      if (isEventAttribute) {
+        const eventName = key.substring(2).toLowerCase() // e.g. onClick -> click
+        newElement.addEventListener(eventName, props[key])
+        return
+      }
+
+      const isClassNameAttribute = key === REACT_OWN_ATTRIBUTES.className
+      if (isClassNameAttribute) {
         newElement.setAttribute(
           RESERVED_JAVASCRIPT_ATTRIBUTES[REACT_OWN_ATTRIBUTES.className],
           props[key]
         )
       }
 
-      if (key === REACT_OWN_ATTRIBUTES.htmlFor) {
+      const isHtmlForAttribute = key === REACT_OWN_ATTRIBUTES.htmlFor
+      if (isHtmlForAttribute) {
         newElement.setAttribute(
           RESERVED_JAVASCRIPT_ATTRIBUTES[REACT_OWN_ATTRIBUTES.htmlFor],
           props[key]
