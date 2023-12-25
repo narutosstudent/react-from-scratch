@@ -83,7 +83,9 @@ function render(vdom: VDOMNode, container: HTMLElement | null): void {
 
     container.appendChild(newElement)
 
-    children.forEach((child) => {})
+    children.forEach((child) => {
+      render(child, newElement)
+    })
   }
 }
 
