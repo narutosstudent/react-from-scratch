@@ -44,6 +44,42 @@ A function component is just a function. React calls it just like any other func
 
 The render function gets the element to render and the container where to render it. The container is a DOM element. The element is the VDOM Node converted by Babel.
 
+## vdom.type as function
+
+Let's say we have a component like this:
+
+```js
+{
+  type: MyComponent,  // Reference to the MyComponent function
+  props: {
+    children: []      // No children in this case
+  }
+}
+```
+
+The component when defined:
+
+```js
+function MyComponent() {
+  return <h1>Hello World</h1>
+}
+```
+
+We'd call it in the `render` function with its props `vdom.type(vdom.props)`. This will return a new VDOM node. We can then call `render` again with the new VDOM node.
+
+It will end up like this when called with its props:
+
+```js
+{
+  type: 'h1',
+  props: {
+    children: [
+      { type: 'TEXT_ELEMENT', props: { nodeValue: 'Hello World', children: [] } }
+    ]
+  }
+}
+```
+
 ## VDOM
 
 This object is a virtual DOM element. The virtual DOM is a lightweight copy of the actual DOM, allowing React to do fast operations in memory without touching the real DOM. Touching the real DOM every time would be slow/expensive.
@@ -51,6 +87,16 @@ This object is a virtual DOM element. The virtual DOM is a lightweight copy of t
 ## Reconciliation
 
 React compares the new VDOM with the previous one and figures out what has changed. This process is called reconciliation. React does not update the entire DOM tree. Instead, it updates only what's necessary.
+
+## createTextNode for text nodes
+
+Learned it's much better than using `innerHTML` or `innerText` to update text nodes. It's more efficient and safer.
+
+- `document.createTextNode` creates a text node
+- Treat as plain text, not HTML
+- Escape special characters so they are displayed correctly
+- Avoid HTML injection attacks
+- Text nodes created with `document.createTextNode` can be updated individually without affecting other nodes in the DOM. Resulting in efficient updates.
 
 # Notes
 
