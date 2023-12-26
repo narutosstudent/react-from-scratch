@@ -99,17 +99,44 @@ function render(vdom: VDOMNode, container: HTMLElement | null): void {
   }
 }
 
+let states: any[] = []
+let stateIndex = 0
+
+function useState<InitialState>(
+  initialState: InitialState
+): readonly [InitialState, (newState: InitialState) => void] {
+  const FROZEN_CURSOR = stateIndex
+  states[FROZEN_CURSOR] =
+    (states[FROZEN_CURSOR] as InitialState) || initialState
+
+  const setState = (newState: InitialState) => {
+    states[FROZEN_CURSOR] = newState
+    rerender()
+  }
+
+  stateIndex++
+  return [states[FROZEN_CURSOR], setState] as const
+}
+
 function App() {
+  const [count, setCount] = useState(0)
+
   const handleClick = () => {
-    console.log('Button clicked!')
+    setCount(count + 1)
   }
 
   return (
     <div>
-      <h1>Hello World</h1>
+      <h1>Count: {count}</h1>
       <button onClick={handleClick}>Click Me</button>
     </div>
   )
 }
 
 render(<App />, document.getElementById('app'))
+
+const rerender = () => {
+  stateIndex = 0
+  document.querySelector('#app')?.firstChild?.remove()
+  render(<App />, document.querySelector('#app'))
+}
