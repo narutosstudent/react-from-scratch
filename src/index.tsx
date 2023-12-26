@@ -110,25 +110,28 @@ function useState<InitialState>(
   InitialState,
   (newState: InitialState | StateFunction<InitialState>) => void
 ] {
-  const FROZEN_CURSOR = stateIndex
-  states[FROZEN_CURSOR] =
-    (states[FROZEN_CURSOR] as InitialState) || initialState
+  // Needed so that we do not access wrong state.
+  // This is a closure pattern in JavaScript. Closures remember the environment in which they were created.
+  // Even though stateIndex changes, FROZEN_INDEX will always be the same.
+  const FROZEN_INDEX = stateIndex
+
+  states[FROZEN_INDEX] = (states[FROZEN_INDEX] as InitialState) || initialState
 
   const setState = (newState: InitialState | StateFunction<InitialState>) => {
     const isCallback = typeof newState === 'function'
 
     if (isCallback) {
       const callback = newState as StateFunction<InitialState>
-      states[FROZEN_CURSOR] = callback(states[FROZEN_CURSOR])
+      states[FROZEN_INDEX] = callback(states[FROZEN_INDEX])
     } else {
-      states[FROZEN_CURSOR] = newState
+      states[FROZEN_INDEX] = newState
     }
 
-    // rerender()
+    rerender() // If we do not rerender, the state will be updated but the UI will not
   }
 
   stateIndex++
-  return [states[FROZEN_CURSOR], setState] as const
+  return [states[FROZEN_INDEX], setState] as const
 }
 
 function App() {
