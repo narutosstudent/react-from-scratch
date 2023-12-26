@@ -99,8 +99,15 @@ function render(vdom: VDOMNode, container: HTMLElement | null): void {
   }
 }
 
-let states: any[] = []
-let stateIndex = 0
+function generateId() {
+  return Math.random().toString(36).substr(2, 9)
+}
+
+const START_ID = '851904548615'
+
+let states: Record<string, unknown> = {
+  [START_ID]: null,
+}
 
 type StateFunction<State> = (prevState: State) => State
 
@@ -112,26 +119,24 @@ function useState<InitialState>(
 ] {
   // Needed so that we do not access wrong state.
   // This is a closure pattern in JavaScript. Closures remember the environment in which they were created.
-  // Even though stateIndex changes, FROZEN_INDEX will always be the same.
-  const FROZEN_INDEX = stateIndex
+  const FROZEN_KEY = states[START_ID] ? generateId() : START_ID
 
-  states[FROZEN_INDEX] = (states[FROZEN_INDEX] as InitialState) || initialState
+  states[FROZEN_KEY] = (states[FROZEN_KEY] as InitialState) || initialState
 
   const setState = (newState: InitialState | StateFunction<InitialState>) => {
     const isCallback = typeof newState === 'function'
 
     if (isCallback) {
       const callback = newState as StateFunction<InitialState>
-      states[FROZEN_INDEX] = callback(states[FROZEN_INDEX])
+      states[FROZEN_KEY] = callback(states[FROZEN_KEY] as InitialState)
     } else {
-      states[FROZEN_INDEX] = newState
+      states[FROZEN_KEY] = newState
     }
 
     rerender() // If we do not rerender, the state will be updated but the UI will not
   }
 
-  stateIndex++
-  return [states[FROZEN_INDEX], setState] as const
+  return [states[FROZEN_KEY] as InitialState, setState] as const
 }
 
 function App() {
@@ -156,7 +161,7 @@ function App() {
 render(<App />, document.getElementById('app'))
 
 const rerender = () => {
-  stateIndex = 0
+  states = { [START_ID]: null }
   document.querySelector('#app')?.firstChild?.remove()
   render(<App />, document.querySelector('#app'))
 }
