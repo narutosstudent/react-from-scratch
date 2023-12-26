@@ -102,16 +102,29 @@ function render(vdom: VDOMNode, container: HTMLElement | null): void {
 let states: any[] = []
 let stateIndex = 0
 
+type StateFunction<State> = (prevState: State) => State
+
 function useState<InitialState>(
   initialState: InitialState
-): readonly [InitialState, (newState: InitialState) => void] {
+): readonly [
+  InitialState,
+  (newState: InitialState | StateFunction<InitialState>) => void
+] {
   const FROZEN_CURSOR = stateIndex
   states[FROZEN_CURSOR] =
     (states[FROZEN_CURSOR] as InitialState) || initialState
 
-  const setState = (newState: InitialState) => {
-    states[FROZEN_CURSOR] = newState
-    rerender()
+  const setState = (newState: InitialState | StateFunction<InitialState>) => {
+    const isCallback = typeof newState === 'function'
+
+    if (isCallback) {
+      const callback = newState as StateFunction<InitialState>
+      states[FROZEN_CURSOR] = callback(states[FROZEN_CURSOR])
+    } else {
+      states[FROZEN_CURSOR] = newState
+    }
+
+    // rerender()
   }
 
   stateIndex++
@@ -122,7 +135,11 @@ function App() {
   const [count, setCount] = useState(0)
 
   const handleClick = () => {
+    // directly mutating the state
     setCount(count + 1)
+
+    // using callback
+    // setCount((prevCount) => prevCount + 1)
   }
 
   return (
