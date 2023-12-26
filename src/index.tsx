@@ -1,5 +1,7 @@
 // Building a mini ReactJS from scratch
 
+import { v4 } from 'uuid'
+
 const REACT_OWN_ATTRIBUTES = {
   className: 'className',
   htmlFor: 'htmlFor',
@@ -99,11 +101,7 @@ function render(vdom: VDOMNode, container: HTMLElement | null): void {
   }
 }
 
-function generateId() {
-  return Math.random().toString(36).substr(2, 9)
-}
-
-const START_ID = '851904548615'
+const START_ID = v4()
 
 let states: Record<string, unknown> = {
   [START_ID]: null,
@@ -119,7 +117,7 @@ function useState<InitialState>(
 ] {
   // Needed so that we do not access wrong state.
   // This is a closure pattern in JavaScript. Closures remember the environment in which they were created.
-  const FROZEN_KEY = states[START_ID] ? generateId() : START_ID
+  const FROZEN_KEY = states[START_ID] ? v4() : START_ID
 
   states[FROZEN_KEY] = (states[FROZEN_KEY] as InitialState) || initialState
 
